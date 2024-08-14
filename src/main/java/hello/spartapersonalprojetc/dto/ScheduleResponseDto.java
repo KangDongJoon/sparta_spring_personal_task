@@ -9,7 +9,7 @@ public class ScheduleResponseDto {
     private String task;
     private String name;
     private int pw;
-    private int date;
+    private String date;
 
     public ScheduleResponseDto(Schedule schedule) {
         this.id = schedule.getId();

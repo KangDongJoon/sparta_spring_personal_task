@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,24 +21,20 @@ public class ScheduleController {
         Schedule schedule = new Schedule(requestDto);
 
         // Schedule ID의 최대값 찾기
-        Long maxId = scheduleList.size() > 0 ? Collections.max(scheduleList.keySet()) + 1 : 1;
+        Long maxId = !scheduleList.isEmpty() ? Collections.max(scheduleList.keySet()) + 1 : 1;
         schedule.setId(maxId);
 
         // DB 저장
         scheduleList.put(schedule.getId(), schedule);
 
         // Entity -> ResponseDto
-        ScheduleResponseDto scheduleResponseDto = new ScheduleResponseDto(schedule);
 
-        return scheduleResponseDto;
+        return new ScheduleResponseDto(schedule);
     }
 
-//    @GetMapping("/schedules")
-//    public List<ScheduleResponseDto> getSchedule() {
-//        // Map to List
-//        List<ScheduleResponseDto> responseList = scheduleList.values().stream()
-//                .map(ScheduleResponseDto::new).toList();
-//
-//        return responseList;
-//    }
+    @GetMapping("/schedule/{id}")
+    public ScheduleResponseDto getSchedule(@PathVariable Long id) {
+        Schedule schedule = scheduleList.get(id);
+        return new ScheduleResponseDto(schedule);
+    }
 }
