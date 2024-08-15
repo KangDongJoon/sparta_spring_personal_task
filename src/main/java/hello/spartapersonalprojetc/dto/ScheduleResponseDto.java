@@ -18,4 +18,12 @@ public class ScheduleResponseDto {
         this.pw = schedule.getPw();
         this.date = schedule.getDate();
     }
+
+    public ScheduleResponseDto(Long id, String task, String name, int pw, String date) {
+        this.id = id;
+        this.task = task;
+        this.name = name;
+        this.pw = pw;
+        this.date = date;
+    }
 }
