@@ -1,0 +1,10 @@
+USE sparta_spring_personal_project;
+
+CREATE TABLE IF NOT EXISTS SCHEDULE
+(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    task VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    pw VARCHAR(100) NOT NULL,
+    date VARCHAR(100) NOT NULL
+)
