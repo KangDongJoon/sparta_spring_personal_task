@@ -9,21 +9,24 @@ public class ScheduleResponseDto {
     private String task;
     private String name;
     private int pw;
-    private String date;
+    private String writeDay;
+    private String updateDay;
 
     public ScheduleResponseDto(Schedule schedule) {
         this.id = schedule.getId();
         this.task = schedule.getTask();
         this.name = schedule.getName();
         this.pw = schedule.getPw();
-        this.date = schedule.getDate();
+        this.writeDay = schedule.getWriteDay();
+        this.updateDay = schedule.getUpdateDay();
     }
 
-    public ScheduleResponseDto(Long id, String task, String name, int pw, String date) {
+    public ScheduleResponseDto(Long id, String task, String name, int pw, String writeDay, String updateDay) {
         this.id = id;
         this.task = task;
         this.name = name;
         this.pw = pw;
-        this.date = date;
+        this.writeDay = writeDay;
+        this.updateDay = updateDay;
     }
 }

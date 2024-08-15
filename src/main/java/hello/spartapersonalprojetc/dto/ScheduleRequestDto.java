@@ -7,5 +7,6 @@ public class ScheduleRequestDto {
     private String task;
     private String name;
     private int pw;
-    private String date;
+    private String writeDay;
+    private String updateDay;
 }

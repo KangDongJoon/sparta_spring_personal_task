@@ -18,7 +18,8 @@ public class Schedule {
     private String task;
     private String name;
     private int pw;
-    private String date;
+    private String writeDay;
+    private String updateDay;
 
     public Schedule(ScheduleRequestDto requestDto) {
         this.task = requestDto.getTask();
@@ -28,6 +29,7 @@ public class Schedule {
         // 현재 시간 저장
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        this.date = now.format(formatter);
+        this.writeDay = now.format(formatter);
+        this.updateDay = now.format(formatter);
     }
 }

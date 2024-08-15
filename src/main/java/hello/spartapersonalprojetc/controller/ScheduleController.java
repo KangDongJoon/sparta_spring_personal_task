@@ -3,6 +3,8 @@ package hello.spartapersonalprojetc.controller;
 import hello.spartapersonalprojetc.dto.ScheduleRequestDto;
 import hello.spartapersonalprojetc.dto.ScheduleResponseDto;
 import hello.spartapersonalprojetc.entity.Schedule;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -38,7 +40,7 @@ public class ScheduleController {
         // DB 저장
         KeyHolder keyHolder = new GeneratedKeyHolder(); // 기본 키를 반환받기 위한 객체
 
-        String sql = "INSERT INTO schedule (task, name, pw, date) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO schedule (task, name, pw, writeDay, updateDay) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(con -> {
                     PreparedStatement preparedStatement = con.prepareStatement(sql,
                             Statement.RETURN_GENERATED_KEYS);
@@ -46,7 +48,8 @@ public class ScheduleController {
                     preparedStatement.setString(1, schedule.getTask());
                     preparedStatement.setString(2, schedule.getName());
                     preparedStatement.setInt(3, schedule.getPw());
-                    preparedStatement.setString(4, schedule.getDate());
+                    preparedStatement.setString(4, schedule.getWriteDay());
+                    preparedStatement.setString(5, schedule.getUpdateDay());
                     return preparedStatement;
                 },
                 keyHolder);
@@ -73,8 +76,9 @@ public class ScheduleController {
                 String name = rs.getString("name");
                 String task = rs.getString("task");
                 int pw = rs.getInt("pw");
-                String date = rs.getString("date");
-                return new ScheduleResponseDto(id, task, name, pw, date);
+                String writeDay = rs.getString("writeday");
+                String updateDay = rs.getString("updateday");
+                return new ScheduleResponseDto(id, task, name, pw, writeDay, updateDay);
             }
         });
     }
@@ -90,9 +94,31 @@ public class ScheduleController {
                 String name = rs.getString("name");
                 String task = rs.getString("task");
                 int pw = rs.getInt("pw");
-                String date = rs.getString("date");
-                return new ScheduleResponseDto(id, task, name, pw, date);
+                String writeDay = rs.getString("writeday");
+                String updateDay = rs.getString("updateday");
+                return new ScheduleResponseDto(id, task, name, pw, writeDay, updateDay);
             }
         });
     }
+
+    //@GetMapping("/schedules/filter")
+
+    //@PutMapping("schedules/{id}")
+
+    @DeleteMapping("schedules/{id}")
+    public ResponseEntity<String> deleteSchedule(@PathVariable Long id, @RequestParam int pw){
+        String sql = "SELECT pw FROM SCHEDULE WHERE id = ?";
+
+        int idsPw = jdbcTemplate.queryForObject(sql, new Object[]{id}, Integer.class);
+
+        if (idsPw != pw) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("비밀번호가 틀렸습니다.");
+        }else{
+            String deleteSql = "DELETE FROM SCHEDULE WHERE id = ?";
+            jdbcTemplate.update(deleteSql, id);
+            return ResponseEntity.ok("Schedule deleted successfully");
+        }
+    }
+
+
 }
