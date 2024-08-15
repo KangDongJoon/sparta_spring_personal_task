@@ -78,4 +78,21 @@ public class ScheduleController {
             }
         });
     }
+
+    @GetMapping("/schedules/{id}")
+    public ScheduleResponseDto getScheduleById(@PathVariable Long id) {
+        // DB 조회
+        String sql = "SELECT * FROM SCHEDULE WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, new RowMapper<ScheduleResponseDto>() {
+            @Override
+            public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Long id = rs.getLong("id");
+                String name = rs.getString("name");
+                String task = rs.getString("task");
+                int pw = rs.getInt("pw");
+                String date = rs.getString("date");
+                return new ScheduleResponseDto(id, task, name, pw, date);
+            }
+        });
+    }
 }
