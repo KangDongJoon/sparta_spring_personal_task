@@ -16,10 +16,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -103,22 +102,57 @@ public class ScheduleController {
 
     //@GetMapping("/schedules/filter")
 
-    //@PutMapping("schedules/{id}")
+    @PutMapping("schedules/{id}")
+    public ResponseEntity<String> setSchedule(
+            @PathVariable Long id,
+            @RequestParam int pw,
+            @RequestParam(required = false) String task,
+            @RequestParam(required = false) String name) {
+
+        StringBuilder sqlBuilder = new StringBuilder("UPDATE SCHEDULE SET ");
+        String sql = "SELECT pw FROM SCHEDULE WHERE id = ?";
+        List<Object> params = new ArrayList<>();
+        int idsPw = jdbcTemplate.queryForObject(sql, new Object[]{id}, Integer.class);
+
+        if (idsPw != pw) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("비밀번호가 틀렸습니다.");
+        }
+        if (task != null) {
+            sqlBuilder.append("task = ?, ");
+            params.add(task);
+        }
+        if (name != null) {
+            sqlBuilder.append("name = ?, ");
+            params.add(name);
+        }
+
+        sqlBuilder.append("updateDay = ?, ");
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        params.add(now.format(formatter));
+
+
+        sqlBuilder.deleteCharAt(sqlBuilder.length() - 2);
+        sqlBuilder.append(" WHERE id = ?");
+        params.add(id);
+
+        jdbcTemplate.update(sqlBuilder.toString(), params.toArray());
+
+        return ResponseEntity.ok("일정 수정 완료");
+    }
 
     @DeleteMapping("schedules/{id}")
-    public ResponseEntity<String> deleteSchedule(@PathVariable Long id, @RequestParam int pw){
+    public ResponseEntity<String> deleteSchedule(@PathVariable Long id, @RequestParam int pw) {
         String sql = "SELECT pw FROM SCHEDULE WHERE id = ?";
 
         int idsPw = jdbcTemplate.queryForObject(sql, new Object[]{id}, Integer.class);
 
         if (idsPw != pw) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("비밀번호가 틀렸습니다.");
-        }else{
+        } else {
             String deleteSql = "DELETE FROM SCHEDULE WHERE id = ?";
             jdbcTemplate.update(deleteSql, id);
             return ResponseEntity.ok("Schedule deleted successfully");
         }
     }
-
-
 }
