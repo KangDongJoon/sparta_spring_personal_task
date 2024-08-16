@@ -100,7 +100,53 @@ public class ScheduleController {
         });
     }
 
-    //@GetMapping("/schedules/filter")
+    @GetMapping("/schedules/filter")
+    public List<ScheduleResponseDto> getSchedules(
+            @RequestParam(required = false) String updateDay,
+            @RequestParam(required = false) String name) {
+        StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM SCHEDULE");
+        List<Object> params = new ArrayList<>();
+
+        // 필터링 조건이 없으면 빈 리스트를 반환
+        if (updateDay == null && name == null) {
+            return new ArrayList<>();
+        }
+
+        boolean addAnd = false;
+
+        if (updateDay != null || name != null) {
+            sqlBuilder.append(" WHERE ");
+
+            if (updateDay != null) {
+                sqlBuilder.append("updateDay LIKE ?");
+                params.add(updateDay + "%");
+                addAnd = true;
+            }
+
+            if (name != null) {
+                if (addAnd) {
+                    sqlBuilder.append(" AND ");
+                }
+                sqlBuilder.append("name = ?");
+                params.add(name);
+            }
+        }
+
+        return jdbcTemplate.query(sqlBuilder.toString(), params.toArray(), new RowMapper<ScheduleResponseDto>() {
+            @Override
+            public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Long id = rs.getLong("id");
+                String taskName = rs.getString("name");
+                String task = rs.getString("task");
+                int pw = rs.getInt("pw");
+                String writeDay = rs.getString("writeday");
+                String updateDayValue = rs.getString("updateday");
+                return new ScheduleResponseDto(id, task, taskName, pw, writeDay, updateDayValue);
+            }
+        });
+    }
+
+
 
     @PutMapping("schedules/{id}")
     public ResponseEntity<String> setSchedule(
